@@ -8,10 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TeklaStructuralDesigner.RemotingAPI" Version="0.1.2" />
+    <PackageReference Include="Grpc" Version="2.46.3" />
+    <PackageReference Include="Grpc.Core" Version="2.46.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="TSD RPC">
+      <HintPath>..\..\..\..\..\Program Files\Tekla\Structural\Structural Designer 2022\TSD RPC.dll</HintPath>
+    </Reference>
     <Reference Include="TSD.API.Remoting">
       <HintPath>..\..\..\..\..\Program Files\Tekla\Structural\Structural Designer 2022\TSD.API.Remoting.dll</HintPath>
     </Reference>

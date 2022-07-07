@@ -68,18 +68,18 @@ namespace TSD_sectionMGR
             public string Name { get; }
             public bool IsSuccessful { get; }
             public TSD.API.Remoting.Application? Instance { get; }
-            public TSD.API.Remoting.Document.IDocument? Document { get; }
-            public TSD.API.Remoting.Structure.IModel? Model { get; }
-            public IEnumerable<TSD.API.Remoting.Structure.IMember?>? Members { get; }
+            public TSD.API.Remoting.Document.Document? Document { get; }
+            public TSD.API.Remoting.Structure.Model? Model { get; }
+            //public IEnumerable<TSD.API.Remoting.Structure.IMember?>? Members { get; }
 
-            public ProjAttr(TSD.API.Remoting.Application instance, TSD.API.Remoting.Document.IDocument document, TSD.API.Remoting.Structure.IModel model, IEnumerable<TSD.API.Remoting.Structure.IMember> members)
+            public ProjAttr(TSD.API.Remoting.Application instance, TSD.API.Remoting.Document.Document document, TSD.API.Remoting.Structure.Model model) //, IEnumerable<TSD.API.Remoting.Structure.IMember> members
             {
                 Name = document.Path.ToString();
                 IsSuccessful = true;
                 Instance = instance;
                 Document = document;
                 Model = model;
-                Members = members;
+                //Members = members;
             }
 
             public ProjAttr(string error)
@@ -107,13 +107,13 @@ namespace TSD_sectionMGR
             {
                 return new ProjAttr("Error: No model found in document!");
             }
-            var members = await model.GetMemberAsync(null);
-            if (!members.Any())
-            {
-                return new ProjAttr("Error: No members found in model!");
-            }
+            //var members = await model.GetMemberAsync(null);
+            //if (!members.Any())
+            //{
+            //    return new ProjAttr("Error: No members found in model!");
+            //}
             //IEnumerable<TSD.API.Remoting.Structure.IMember?>? members = null;
-            return new ProjAttr(instance, document, model, members);
+            return new ProjAttr(instance, document, model);
         }
 
         public static ProjAttr GetProjAttr()
@@ -138,7 +138,7 @@ namespace TSD_sectionMGR
             // Get path to model
             Task<string> docPath = Task.Run(() => GetDocumentPath());
             docPath.Wait();
-            string documentPath =  docPath.Result;
+            string documentPath = docPath.Result;
 
             // Make dictionary
             Dictionary<string, string> result = new Dictionary<string, string>();
@@ -155,13 +155,13 @@ namespace TSD_sectionMGR
             ProjAttr proj = GetProjAttr();
             if (proj.IsSuccessful == true)
             {
-                var members = proj.Members;
+                //var members = proj.Members;
                 string str = "";
-                foreach(var member in members)
-                {
-                    str += member.Type.ToString() + "\n";
-                    Debug.WriteLine(str);
-                }
+                //foreach(var member in members)
+                //{
+                //    str += member.Type.ToString() + "\n";
+                //    Debug.WriteLine(str);
+                //}
 
                 return str;
             }
@@ -188,22 +188,40 @@ namespace TSD_sectionMGR
             }
         }
 
-        private void BRun_Click(object sender, RoutedEventArgs e)
+        private async void BRun_Click(object sender, RoutedEventArgs e)
         {
             OutputLog.Text += "\nStarted " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
             // Get project attributes (instance, document, model)
             ProjAttr proj = GetProjAttr();
-            if(proj.IsSuccessful == true)
-            {
-                var members = proj.Members;
+            var members = await proj.Model.GetMemberAsync(null);
+            TSD.API.Remoting.Materials.MaterialType timberMatl = TSD.API.Remoting.Materials.MaterialType.Timber;
+            TSD.API.Remoting.Materials.TimberFabrication glulamFab = TSD.API.Remoting.Materials.TimberFabrication.Glulam;
+            TSD.API.Remoting.Sections.SectionType TBGL = TSD.API.Remoting.Sections.SectionType.GluedLaminatedTimberBeam;
 
-                foreach(var member in members)
-                {
-                    OutputLog.Text += "hi" + "\n";
-                }
+
+            //TSD.API.Remoting.Sections.ISectionFactory sectionFactory = TSD.API.Remoting.Sections.ISectionFactory.
+            
+            foreach(var member in members)
+            {
+                var span = await member.GetSpanAsync();
+                var spanLength = span.First().Length;
+                var id = member.Id;
+                var name = member.Name;
+                var materialType = member.MaterialType.Value;
+                var memberType = member.MemberType.Value;
+
+                OutputLog.Text += ("\nMember Name: " + name.ToString() +
+                                  "\n  ID: " + id.ToString() +
+                                  "\n  Member Type: " + memberType.ToString() +
+                                  "\n  Material: " + materialType.ToString() +
+                                  "\n  Span Length: " + (spanLength/25.4).ToString() + "\"");
+
             }
 
+            OutputLog.Text += "\nSections:\n";
+            //var sections = proj.Model.SectionFactory.
+            //sections.
 
             OutputLog.Text += "\nFinished " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         }
