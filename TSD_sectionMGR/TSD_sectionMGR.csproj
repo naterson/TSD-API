@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TeklaStructuralDesigner.RemotingAPI" Version="0.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="TSD.API.Remoting">
+      <HintPath>..\..\..\..\..\Program Files\Tekla\Structural\Structural Designer 2022\TSD.API.Remoting.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
